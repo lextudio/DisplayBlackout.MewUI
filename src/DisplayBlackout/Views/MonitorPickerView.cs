@@ -8,23 +8,19 @@ namespace DisplayBlackout.Views;
 
 /// <summary>
 /// Visual monitor layout where each monitor is a toggle button.
-/// Replaces the WinUI Viewbox + ItemsControl pattern.
+/// Monitors are positioned using their actual spatial coordinates.
 /// </summary>
 internal sealed class MonitorPickerView : UserControl
 {
     private readonly BlackoutService _blackoutService;
-    private readonly StackPanel _container;
+    private readonly Canvas _canvas;
     private readonly List<MonitorToggle> _toggles = [];
 
     public MonitorPickerView(BlackoutService blackoutService)
     {
         _blackoutService = blackoutService;
 
-        Content = new StackPanel()
-            .Ref(out _container)
-            .Horizontal()
-            .Spacing(4)
-            .Center();
+        Content = new Canvas().Ref(out _canvas);
 
         BuildMonitors();
     }
@@ -32,7 +28,7 @@ internal sealed class MonitorPickerView : UserControl
     public void Rebuild()
     {
         _toggles.Clear();
-        _container.Clear();
+        _canvas.Clear();
         BuildMonitors();
     }
 
@@ -41,9 +37,7 @@ internal sealed class MonitorPickerView : UserControl
         var monitors = _blackoutService.GetDisplays().ToList();
 
         if (monitors.Count == 0)
-        {
             return;
-        }
 
         var displayNumbers = new Dictionary<string, int>();
         var sorted = monitors
@@ -51,33 +45,32 @@ internal sealed class MonitorPickerView : UserControl
             .ThenBy(static m => m.Name, StringComparer.OrdinalIgnoreCase)
             .ToList();
         for (int i = 0; i < sorted.Count; i++)
-        {
             displayNumbers[sorted[i].Id] = i + 1;
-        }
 
-        // Sort by X then Y for visual layout
-        monitors.Sort((a, b) =>
-        {
-            int xCompare = a.Bounds.Left.CompareTo(b.Bounds.Left);
-            return xCompare != 0 ? xCompare : a.Bounds.Top.CompareTo(b.Bounds.Top);
-        });
+        int minX = monitors.Min(static m => m.Bounds.Left);
+        int minY = monitors.Min(static m => m.Bounds.Top);
+        int maxX = monitors.Max(static m => m.Bounds.Right);
+        int maxY = monitors.Max(static m => m.Bounds.Bottom);
 
-        // Find bounding box for scaling
-        int maxHeight = 0;
-        foreach (var m in monitors)
-        {
-            maxHeight = Math.Max(maxHeight, m.Bounds.Height);
-        }
+        int totalWidth = maxX - minX;
+        int totalHeight = maxY - minY;
 
-        // Scale so tallest monitor is ~120 DIPs
-        const double targetHeight = 120;
-        double scale = maxHeight > 0 ? targetHeight / maxHeight : 1;
+        const double targetWidth = 300;
+        const double targetHeight = 160;
+        double scale = Math.Min(
+            totalWidth > 0 ? targetWidth / totalWidth : 1,
+            totalHeight > 0 ? targetHeight / totalHeight : 1);
+
+        _canvas
+            .Width(totalWidth * scale)
+            .Height(totalHeight * scale);
 
         var selectedIds = _blackoutService.SelectedMonitorIds;
 
-        for (int i = 0; i < monitors.Count; i++)
+        foreach (var monitor in monitors)
         {
-            var monitor = monitors[i];
+            double left = (monitor.Bounds.Left - minX) * scale;
+            double top = (monitor.Bounds.Top - minY) * scale;
             double w = monitor.Bounds.Width * scale;
             double h = monitor.Bounds.Height * scale;
 
@@ -86,13 +79,14 @@ internal sealed class MonitorPickerView : UserControl
                 : !monitor.IsPrimary;
 
             var toggle = new MonitorToggle(displayNumbers[monitor.Id], monitor.Id, monitor.IsPrimary, isSelected);
-            toggle.Button
-                .Width(w)
-                .Height(h);
+            toggle.Tile.Width(w).Height(h);
             toggle.Button.CheckedChanged += _ => UpdateSelection();
 
+            Canvas.SetLeft(toggle.Tile, left);
+            Canvas.SetTop(toggle.Tile, top);
+
             _toggles.Add(toggle);
-            _container.Add(toggle.Button);
+            _canvas.Add(toggle.Tile);
         }
     }
 
@@ -102,9 +96,7 @@ internal sealed class MonitorPickerView : UserControl
         foreach (var toggle in _toggles)
         {
             if (toggle.Button.IsChecked)
-            {
                 selected.Add(toggle.DisplayId);
-            }
         }
         _blackoutService.UpdateSelectedMonitors(selected);
     }
@@ -113,10 +105,11 @@ internal sealed class MonitorPickerView : UserControl
 internal sealed class MonitorToggle
 {
     public string DisplayId { get; }
-
     public bool IsPrimary { get; }
-
     public ToggleButton Button { get; }
+
+    /// <summary>Root element placed on the Canvas.</summary>
+    public FrameworkElement Tile { get; }
 
     public MonitorToggle(int displayNumber, string displayId, bool isPrimary, bool isSelected)
     {
@@ -153,5 +146,19 @@ internal sealed class MonitorToggle
 
         Button.WithTheme((t, _) => ApplyColors(t));
         Button.CheckedChanged += _ => Button.WithTheme((t, _) => ApplyColors(t));
+
+        // Wrap in a Border to show spatial separation between monitors
+        var border = new Border()
+            .Padding(2)
+            .CornerRadius(4)
+            .Child(Button);
+
+        border.WithTheme((t, c) => c
+            .BorderThickness(2)
+            .BorderBrush(isPrimary
+                ? t.Palette.Accent
+                : t.Palette.ControlBorder));
+
+        Tile = border;
     }
 }
