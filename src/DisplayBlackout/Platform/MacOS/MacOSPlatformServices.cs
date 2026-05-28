@@ -10,6 +10,8 @@ internal sealed class MacOSPlatformServices
 
     public ISystemEventService SystemEvents { get; } = new MacOSSystemEventService();
 
+    public IDisplayPowerService DisplayPowerService { get; } = new MacOSDisplayPowerService();
+
     public IAppIndicator CreateAppIndicator(Assembly assembly)
         => MacOSAppIndicator.FromResources(assembly);
 }

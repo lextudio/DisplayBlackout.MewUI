@@ -5,4 +5,5 @@ internal sealed record DisplayInfo(
     DisplayBounds Bounds,
     bool IsPrimary,
     string Name,
-    int SortOrder = 0);
+    int SortOrder = 0,
+    bool IsEnabled = true);

@@ -2,15 +2,16 @@ using Aprillz.MewUI;
 using Aprillz.MewUI.Controls;
 using Aprillz.MewUI.Rendering;
 
+using DisplayBlackout.Platform;
 using DisplayBlackout.Services;
 
 namespace DisplayBlackout.Views;
 
 internal sealed class SettingsView : UserControl
 {
-    public SettingsView(BlackoutService blackoutService, DisplayNumberService displayNumberService, SettingsService? settingsService = null)
+    public SettingsView(BlackoutService blackoutService, DisplayNumberService displayNumberService, IDisplayPowerService displayPowerService, SettingsService? settingsService = null)
     {
-        var monitorPicker = new MonitorPickerView(blackoutService);
+        var monitorPicker = new MonitorPickerView(blackoutService, displayPowerService);
 
         var blackoutToggle = new ToggleSwitch()
             .BindIsChecked(blackoutService.IsBlackedOut);

@@ -105,7 +105,51 @@ internal sealed partial class BlackoutService : IDisposable
     /// </summary>
     public IReadOnlySet<string>? SelectedMonitorIds => _selectedMonitorIds;
 
-    public IReadOnlyList<DisplayInfo> GetDisplays() => _displayService.GetDisplays();
+    public IReadOnlyList<DisplayInfo> GetDisplays()
+    {
+        var displays = _displayService.GetDisplays();
+
+        // On macOS, disabled displays may report zero bounds. Patch with last-known bounds
+        // so they remain visible in the picker after a restart.
+        var cache = _settingsService.LoadDisplayBoundsCache();
+        bool cacheUpdated = false;
+        var result = new List<DisplayInfo>(displays.Count);
+
+        foreach (var d in displays)
+        {
+            if (d.Bounds.Width > 0 && d.Bounds.Height > 0)
+            {
+                string encoded = $"{d.Bounds.Left},{d.Bounds.Top},{d.Bounds.Width},{d.Bounds.Height}";
+                if (!cache.TryGetValue(d.Id, out var existing) || existing != encoded)
+                {
+                    cache[d.Id] = encoded;
+                    cacheUpdated = true;
+                }
+                result.Add(d);
+            }
+            else if (cache.TryGetValue(d.Id, out var saved) && TryParseBounds(saved, out var bounds))
+            {
+                result.Add(d with { Bounds = bounds });
+            }
+        }
+
+        if (cacheUpdated)
+            _settingsService.SaveDisplayBoundsCache(cache);
+
+        return result;
+    }
+
+    private static bool TryParseBounds(string s, out DisplayBounds bounds)
+    {
+        bounds = default;
+        var parts = s.Split(',');
+        if (parts.Length != 4) return false;
+        if (!int.TryParse(parts[0], out int l) || !int.TryParse(parts[1], out int t) ||
+            !int.TryParse(parts[2], out int w) || !int.TryParse(parts[3], out int h))
+            return false;
+        bounds = new DisplayBounds(l, t, w, h);
+        return true;
+    }
 
     /// <summary>
     /// Brings all overlay windows to the front of the Z-order.

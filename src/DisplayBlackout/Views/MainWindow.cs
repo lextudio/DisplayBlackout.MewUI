@@ -3,13 +3,14 @@ using System.Reflection;
 using Aprillz.MewUI;
 using Aprillz.MewUI.Controls;
 
+using DisplayBlackout.Platform;
 using DisplayBlackout.Services;
 
 namespace DisplayBlackout.Views;
 
 internal sealed class MainWindow : Window
 {
-    public MainWindow(BlackoutService blackoutService, DisplayNumberService displayNumberService, SettingsService settingsService, bool hotkeyAvailable)
+    public MainWindow(BlackoutService blackoutService, DisplayNumberService displayNumberService, IDisplayPowerService displayPowerService, SettingsService settingsService, bool hotkeyAvailable)
     {
         var asm = Assembly.GetExecutingAssembly();
 
@@ -19,7 +20,7 @@ internal sealed class MainWindow : Window
 
         Title = "Display Blackout";
         Icon = IconSource.FromResource(asm, "icon.ico");
-        Content = new SettingsView(blackoutService, displayNumberService, settingsService);
+        Content = new SettingsView(blackoutService, displayNumberService, displayPowerService, settingsService);
 
         Closing += e =>
         {

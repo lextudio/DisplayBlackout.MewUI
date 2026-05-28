@@ -86,6 +86,15 @@ internal sealed class SettingsService
         Save();
     }
 
+    public Dictionary<string, string> LoadDisplayBoundsCache()
+        => _settings.DisplayBoundsCache ?? [];
+
+    public void SaveDisplayBoundsCache(Dictionary<string, string> cache)
+    {
+        _settings.DisplayBoundsCache = cache.Count > 0 ? cache : null;
+        Save();
+    }
+
     private static AppSettings Load()
     {
         try
@@ -131,6 +140,8 @@ internal sealed class AppSettings
     public string? Theme { get; set; }
 
     public string? Accent { get; set; }
+
+    public Dictionary<string, string>? DisplayBoundsCache { get; set; }
 }
 
 [JsonSerializable(typeof(AppSettings))]

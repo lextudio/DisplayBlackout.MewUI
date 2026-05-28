@@ -14,6 +14,7 @@ IDisplayService displayService;
 IBlackoutOverlayFactory overlayFactory;
 ISystemEventService systemEvents;
 IAppIndicator appIndicator;
+IDisplayPowerService displayPowerService;
 
 var asm = Assembly.GetExecutingAssembly();
 
@@ -27,6 +28,7 @@ if (OperatingSystem.IsMacOS())
     overlayFactory = platformServices.OverlayFactory;
     systemEvents = platformServices.SystemEvents;
     appIndicator = platformServices.CreateAppIndicator(asm);
+    displayPowerService = platformServices.DisplayPowerService;
 }
 else if (OperatingSystem.IsWindows())
 {
@@ -38,6 +40,7 @@ else if (OperatingSystem.IsWindows())
     overlayFactory = platformServices.OverlayFactory;
     systemEvents = platformServices.SystemEvents;
     appIndicator = platformServices.CreateAppIndicator(asm);
+    displayPowerService = platformServices.DisplayPowerService;
 }
 else
 {
@@ -98,7 +101,7 @@ Application.Create()
     .UseAccent(accent)
     .BuildMainWindow(() =>
     {
-        var window = new MainWindow(blackoutService, displayNumberService, settingsService, hotkeyAvailable);
+        var window = new MainWindow(blackoutService, displayNumberService, displayPowerService, settingsService, hotkeyAvailable);
         appIndicator.DoubleClicked += () => window.Show();
         return window;
     })

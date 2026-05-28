@@ -6,6 +6,8 @@ internal sealed class Win32PlatformServices
 {
     public IDisplayService DisplayService { get; } = new Win32DisplayService();
 
+    public IDisplayPowerService DisplayPowerService { get; } = NullDisplayPowerService.Instance;
+
     public IBlackoutOverlayFactory OverlayFactory { get; } = new Win32BlackoutOverlayFactory();
 
     public ISystemEventService SystemEvents { get; } = SystemEventService.Instance;

@@ -13,12 +13,14 @@ namespace DisplayBlackout.Views;
 internal sealed class MonitorPickerView : UserControl
 {
     private readonly BlackoutService _blackoutService;
+    private readonly IDisplayPowerService _displayPowerService;
     private readonly Canvas _canvas;
     private readonly List<MonitorToggle> _toggles = [];
 
-    public MonitorPickerView(BlackoutService blackoutService)
+    public MonitorPickerView(BlackoutService blackoutService, IDisplayPowerService displayPowerService)
     {
         _blackoutService = blackoutService;
+        _displayPowerService = displayPowerService;
 
         Content = new Canvas().Ref(out _canvas);
 
@@ -78,7 +80,13 @@ internal sealed class MonitorPickerView : UserControl
                 ? selectedIds.Contains(monitor.Id)
                 : !monitor.IsPrimary;
 
-            var toggle = new MonitorToggle(displayNumbers[monitor.Id], monitor.Id, monitor.IsPrimary, isSelected);
+            bool canPower = _displayPowerService.CanSleep(monitor.Id);
+
+            var toggle = new MonitorToggle(
+                displayNumbers[monitor.Id], monitor.Id, monitor.IsPrimary,
+                isSelected, monitor.IsEnabled,
+                canPower ? _displayPowerService : null);
+
             toggle.Tile.Width(w).Height(h);
             toggle.Button.CheckedChanged += _ => UpdateSelection();
 
@@ -104,6 +112,8 @@ internal sealed class MonitorPickerView : UserControl
 
 internal sealed class MonitorToggle
 {
+    private bool _isEnabled;
+
     public string DisplayId { get; }
     public bool IsPrimary { get; }
     public ToggleButton Button { get; }
@@ -111,10 +121,12 @@ internal sealed class MonitorToggle
     /// <summary>Root element placed on the Canvas.</summary>
     public FrameworkElement Tile { get; }
 
-    public MonitorToggle(int displayNumber, string displayId, bool isPrimary, bool isSelected)
+    public MonitorToggle(int displayNumber, string displayId, bool isPrimary, bool isSelected,
+        bool isEnabled, IDisplayPowerService? powerService)
     {
         DisplayId = displayId;
         IsPrimary = isPrimary;
+        _isEnabled = isEnabled;
 
         var label = new TextBlock()
             .Text(displayNumber.ToString())
@@ -128,10 +140,19 @@ internal sealed class MonitorToggle
             .BorderThickness(0)
             .CornerRadius(4)
             .Padding(0)
-            .Content(label);
+            .Content(label)
+            .IsEnabled(isEnabled);
 
         void ApplyColors(Theme t)
         {
+            if (!_isEnabled)
+            {
+                Button.Background(t.IsDark
+                    ? Color.FromArgb(255, 60, 60, 60)
+                    : Color.FromArgb(255, 180, 180, 180));
+                label.Foreground(t.IsDark ? Color.DimGray : Color.Gray);
+                return;
+            }
             if (Button.IsChecked)
             {
                 Button.Background(Color.Black);
@@ -147,11 +168,52 @@ internal sealed class MonitorToggle
         Button.WithTheme((t, _) => ApplyColors(t));
         Button.CheckedChanged += _ => Button.WithTheme((t, _) => ApplyColors(t));
 
+        FrameworkElement inner;
+        if (powerService != null)
+        {
+            TextBlock powerIcon = null!;
+            Button powerBtn = null!;
+
+            powerIcon = new TextBlock()
+                .Text(_isEnabled ? "✕" : "+")
+                .FontSize(11)
+                .Bold();
+
+            powerBtn = new Button()
+                .Content(powerIcon)
+                .Padding(3)
+                .CornerRadius(3)
+                .ToolTip(_isEnabled ? "Disable display" : "Enable display")
+                .HorizontalAlignment(HorizontalAlignment.Right)
+                .VerticalAlignment(VerticalAlignment.Top)
+                .Margin(0, 3, 3, 0)
+                .OnClick(() =>
+                {
+                    bool success = _isEnabled
+                        ? powerService.Sleep(displayId)
+                        : powerService.Wake(displayId);
+                    if (success)
+                        SetEnabled(!_isEnabled, powerIcon, powerBtn, ApplyColors);
+                });
+
+            powerBtn.WithTheme((t, c) => c
+                .Background(t.IsDark
+                    ? Color.FromArgb(160, 50, 50, 50)
+                    : Color.FromArgb(160, 200, 200, 200))
+                .BorderThickness(0));
+
+            inner = new Grid().Children(Button, powerBtn);
+        }
+        else
+        {
+            inner = Button;
+        }
+
         // Wrap in a Border to show spatial separation between monitors
         var border = new Border()
             .Padding(2)
             .CornerRadius(4)
-            .Child(Button);
+            .Child(inner);
 
         border.WithTheme((t, c) => c
             .BorderThickness(2)
@@ -160,5 +222,14 @@ internal sealed class MonitorToggle
                 : t.Palette.ControlBorder));
 
         Tile = border;
+    }
+
+    private void SetEnabled(bool enabled, TextBlock powerIcon, Button powerBtn, Action<Theme> applyColors)
+    {
+        _isEnabled = enabled;
+        Button.IsEnabled = enabled;
+        powerIcon.Text(enabled ? "✕" : "+");
+        powerBtn.ToolTip(enabled ? "Disable display" : "Enable display");
+        Button.WithTheme((t, _) => applyColors(t));
     }
 }
