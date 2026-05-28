@@ -176,13 +176,16 @@ internal sealed class MonitorToggle
 
             powerIcon = new TextBlock()
                 .Text(_isEnabled ? "✕" : "+")
-                .FontSize(11)
-                .Bold();
+                .FontSize(12)
+                .Bold()
+                .CenterHorizontal()
+                .CenterVertical();
 
             powerBtn = new Button()
                 .Content(powerIcon)
-                .Padding(3)
-                .CornerRadius(3)
+                .Width(16)
+                .Height(16)
+                .Padding(0)
                 .ToolTip(_isEnabled ? "Disable display" : "Enable display")
                 .HorizontalAlignment(HorizontalAlignment.Right)
                 .VerticalAlignment(VerticalAlignment.Top)
