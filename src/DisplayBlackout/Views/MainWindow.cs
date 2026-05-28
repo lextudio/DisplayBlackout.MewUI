@@ -9,7 +9,7 @@ namespace DisplayBlackout.Views;
 
 internal sealed class MainWindow : Window
 {
-    public MainWindow(BlackoutService blackoutService, SettingsService settingsService, bool hotkeyAvailable)
+    public MainWindow(BlackoutService blackoutService, DisplayNumberService displayNumberService, SettingsService settingsService, bool hotkeyAvailable)
     {
         var asm = Assembly.GetExecutingAssembly();
 
@@ -19,7 +19,7 @@ internal sealed class MainWindow : Window
 
         Title = "Display Blackout";
         Icon = IconSource.FromResource(asm, "icon.ico");
-        Content = new SettingsView(blackoutService, settingsService);
+        Content = new SettingsView(blackoutService, displayNumberService, settingsService);
 
         Closing += e =>
         {

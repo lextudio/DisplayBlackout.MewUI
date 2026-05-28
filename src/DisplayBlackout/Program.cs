@@ -64,6 +64,7 @@ if (resetSettings)
 }
 
 var blackoutService = new BlackoutService(settingsService, displayService, overlayFactory);
+var displayNumberService = new DisplayNumberService(displayService);
 
 // System events (hotkey, display change, focus change)
 bool hotkeyAvailable = systemEvents.Initialize();
@@ -97,7 +98,7 @@ Application.Create()
     .UseAccent(accent)
     .BuildMainWindow(() =>
     {
-        var window = new MainWindow(blackoutService, settingsService, hotkeyAvailable);
+        var window = new MainWindow(blackoutService, displayNumberService, settingsService, hotkeyAvailable);
         appIndicator.DoubleClicked += () => window.Show();
         return window;
     })

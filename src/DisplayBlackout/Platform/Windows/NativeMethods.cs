@@ -367,4 +367,72 @@ internal static partial class NativeMethods
     public static partial nint CreateIconFromResourceEx(nint presbits, uint dwResSize, [MarshalAs(UnmanagedType.Bool)] bool fIcon, uint dwVer, int cxDesired, int cyDesired, uint uFlags);
 
     public const uint LR_DEFAULTCOLOR = 0x00000000;
+
+    // GDI painting (used by display number overlay)
+    public const uint WM_PAINT = 0x000F;
+    public const uint WM_ERASEBKGND = 0x0014;
+    public const int TRANSPARENT_BK = 1;
+    public const uint DT_CENTER = 0x00000001;
+    public const uint DT_VCENTER = 0x00000004;
+    public const uint DT_SINGLELINE = 0x00000020;
+
+    [DllImport("user32.dll")]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+    public static extern nint BeginPaint(nint hwnd, out PAINTSTRUCT lpPaint);
+
+    [DllImport("user32.dll")]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool EndPaint(nint hwnd, ref PAINTSTRUCT lpPaint);
+
+    [LibraryImport("user32.dll")]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool GetClientRect(nint hwnd, out RECT lpRect);
+
+    [LibraryImport("user32.dll")]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+    public static partial int FillRect(nint hDC, ref RECT lprc, nint hbr);
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+    public static extern int DrawTextW(nint hdc, string lpchText, int nCount, ref RECT lprc, uint uFormat);
+
+    [LibraryImport("gdi32.dll")]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+    public static partial nint SelectObject(nint hdc, nint h);
+
+    [LibraryImport("gdi32.dll")]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static partial bool DeleteObject(nint ho);
+
+    [LibraryImport("gdi32.dll")]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+    public static partial uint SetTextColor(nint hdc, uint color);
+
+    [LibraryImport("gdi32.dll")]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+    public static partial int SetBkMode(nint hdc, int mode);
+
+    [DllImport("gdi32.dll", CharSet = CharSet.Unicode)]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+    public static extern nint CreateFontW(int cHeight, int cWidth, int cEscapement, int cOrientation,
+        int cWeight, uint bItalic, uint bUnderline, uint bStrikeOut,
+        uint iCharSet, uint iOutPrecision, uint iClipPrecision, uint iQuality,
+        uint iPitchAndFamily, string? pszFaceName);
+
+    public static uint RGB(byte r, byte g, byte b) => (uint)(r | (g << 8) | (b << 16));
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct PAINTSTRUCT
+    {
+        public nint hdc;
+        public int fErase;
+        public RECT rcPaint;
+        public int fRestore;
+        public int fIncUpdate;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public byte[] rgbReserved;
+    }
 }

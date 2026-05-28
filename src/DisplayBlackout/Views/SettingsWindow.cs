@@ -8,7 +8,7 @@ namespace DisplayBlackout.Views;
 
 internal sealed class SettingsView : UserControl
 {
-    public SettingsView(BlackoutService blackoutService, SettingsService? settingsService = null)
+    public SettingsView(BlackoutService blackoutService, DisplayNumberService displayNumberService, SettingsService? settingsService = null)
     {
         var monitorPicker = new MonitorPickerView(blackoutService);
 
@@ -42,12 +42,27 @@ internal sealed class SettingsView : UserControl
                         new Border()
                             .CornerRadius(8)
                             .Padding(24)
-                            .Margin(0, 0, 0, 12)
+                            .Margin(0, 0, 0, 4)
                             .WithTheme((t, c) => c
                                 .Background(t.Palette.ContainerBackground)
                                 .BorderBrush(t.Palette.ControlBorder)
                                 .BorderThickness(1))
                             .Child(monitorPicker),
+
+                        // Identify button
+                        new Button()
+                            .Content(new TextBlock().Text("123").FontSize(11).Bold())
+                            .Padding(6, 3)
+                            .CornerRadius(4)
+                            .ToolTip("Identify displays")
+                            .HorizontalAlignment(HorizontalAlignment.Right)
+                            .Margin(0, 0, 0, 8)
+                            .OnClick(() => displayNumberService.ShowFor(TimeSpan.FromSeconds(2)))
+                            .WithTheme((t, c) => c
+                                .Background(t.IsDark
+                                    ? Color.FromArgb(160, 50, 50, 50)
+                                    : Color.FromArgb(160, 200, 200, 200))
+                                .BorderThickness(0)),
 
                         // Display blackout toggle (app logo icon, matching original ImageIcon)
                         SettingsCard(
