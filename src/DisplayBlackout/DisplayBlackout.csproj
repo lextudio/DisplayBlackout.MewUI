@@ -16,8 +16,9 @@
     <TrimmerSingleWarn>false</TrimmerSingleWarn>
     <NoWarn>$(NoWarn);CA1416</NoWarn>
 
-    <!-- AOT -->
+    <!-- AOT (publish only; re-enable JSON reflection for debug/DevFlow) -->
     <PublishAot>true</PublishAot>
+    <JsonSerializerIsReflectionEnabledByDefault Condition="'$(PublishingWithAot)' != 'true'">true</JsonSerializerIsReflectionEnabledByDefault>
 
     <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
   </PropertyGroup>
@@ -51,6 +52,11 @@
     <PackageReference Include="Aprillz.MewUI.Backend.Gdi" Version="0.15.2" />
     <PackageReference Include="Aprillz.MewUI.MacOS" Version="0.15.2" />
     <PackageReference Include="Aprillz.MewUI.Platform.Win32" Version="0.15.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\uno-tools\wpf-labs\src\DevFlow\LeXtudio.DevFlow.Agent.Core\LeXtudio.DevFlow.Agent.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\uno-tools\wpf-labs\src\DevFlow\LeXtudio.DevFlow.Agent.MewUI\LeXtudio.DevFlow.Agent.MewUI.csproj" />
   </ItemGroup>
 
 </Project>

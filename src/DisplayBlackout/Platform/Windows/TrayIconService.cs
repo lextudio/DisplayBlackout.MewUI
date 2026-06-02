@@ -30,6 +30,7 @@ internal sealed class TrayIconService : IAppIndicator
 
     public event Action? Clicked;
     public event Action? DoubleClicked;
+    public event Action? ExitRequested;
 
     private TrayIconService(byte[] activeIco, byte[] inactiveIco, string tooltip)
     {
@@ -176,7 +177,10 @@ internal sealed class TrayIconService : IAppIndicator
                     instance.Clicked?.Invoke();
                     return 0;
                 case MENU_ID_EXIT:
-                    Environment.Exit(0);
+                    if (instance.ExitRequested != null)
+                        instance.ExitRequested.Invoke();
+                    else
+                        Environment.Exit(0);
                     return 0;
             }
         }

@@ -9,6 +9,7 @@ using DisplayBlackout.Platform.MacOS;
 using DisplayBlackout.Platform.Win32;
 using DisplayBlackout.Services;
 using DisplayBlackout.Views;
+using LeXtudio.DevFlow.Agent.MewUI;
 
 IDisplayService displayService;
 IBlackoutOverlayFactory overlayFactory;
@@ -82,6 +83,26 @@ systemEvents.DisplayChanged += (_, _) =>
 systemEvents.FocusChanged += (_, _) => blackoutService.BringAllToFront();
 
 appIndicator.Clicked += () => blackoutService.Toggle();
+appIndicator.ExitRequested += async () =>
+{
+    var sleeping = displayService.GetDisplays()
+        .Where(d => displayPowerService.IsAsleep(d.Id))
+        .ToList();
+
+    if (sleeping.Count > 0)
+    {
+        var names = string.Join(", ", sleeping.Select(d => $"Display {d.Name}"));
+        bool confirmed = await MessageBox.ConfirmAsync(
+            $"{names} is physically powered off.\n" +
+            "If you quit now, it will stay off after restarting the app.\n" +
+            "You may need to disconnect and reconnect the cable to recover it.\n\n" +
+            "Quit anyway?",
+            owner: Application.Current?.AllWindows.FirstOrDefault());
+        if (!confirmed) return;
+    }
+
+    Environment.Exit(0);
+};
 appIndicator.Show();
 
 blackoutService.IsBlackedOut.Subscribe(() => appIndicator.SetActive(blackoutService.IsBlackedOut.Value));
@@ -103,6 +124,9 @@ Application.Create()
     {
         var window = new MainWindow(blackoutService, displayNumberService, displayPowerService, settingsService, hotkeyAvailable);
         appIndicator.DoubleClicked += () => window.Show();
+#if DEBUG
+        window.OnLoaded(() => Application.Current.AddMewUIDevFlowAgent());
+#endif
         return window;
     })
     .Run();

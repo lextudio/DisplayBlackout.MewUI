@@ -19,6 +19,7 @@ internal sealed unsafe class MacOSAppIndicator : IAppIndicator
 
     public event Action? Clicked;
     public event Action? DoubleClicked;
+    public event Action? ExitRequested;
 
     public MacOSAppIndicator(string activeIconPath, string inactiveIconPath)
     {
@@ -77,7 +78,13 @@ internal sealed unsafe class MacOSAppIndicator : IAppIndicator
         AddMenuItem(menu, "Toggle Blackout", () => _instance?.Clicked?.Invoke());
         AddMenuItem(menu, "Settings", () => _instance?.DoubleClicked?.Invoke());
         AddSeparator(menu);
-        AddMenuItem(menu, "Exit", () => Environment.Exit(0));
+        AddMenuItem(menu, "Exit", () =>
+        {
+            if (_instance?.ExitRequested != null)
+                _instance.ExitRequested.Invoke();
+            else
+                Environment.Exit(0);
+        });
 
         return menu;
     }

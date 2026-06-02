@@ -172,40 +172,49 @@ internal sealed class MonitorToggle
         if (powerService != null)
         {
             TextBlock powerIcon = null!;
-            Button powerBtn = null!;
+            Border powerCircle = null!;
 
             powerIcon = new TextBlock()
-                .Text(_isEnabled ? "✕" : "+")
-                .FontSize(12)
-                .Bold()
+                .Text(_isEnabled ? "" : "")
+                .FontFamily("Segoe MDL2 Assets")
+                .FontSize(10)
                 .CenterHorizontal()
                 .CenterVertical();
 
-            powerBtn = new Button()
-                .Content(powerIcon)
-                .Width(16)
-                .Height(16)
-                .Padding(0)
+            powerCircle = new Border()
+                .Width(20)
+                .Height(20)
+                .CornerRadius(10)
+                .Cursor(CursorType.Hand)
                 .ToolTip(_isEnabled ? "Disable display" : "Enable display")
                 .HorizontalAlignment(HorizontalAlignment.Right)
                 .VerticalAlignment(VerticalAlignment.Top)
-                .Margin(0, 3, 3, 0)
-                .OnClick(() =>
+                .Margin(0, 4, 4, 0)
+                .Child(powerIcon)
+                .OnMouseDown(_ =>
                 {
                     bool success = _isEnabled
                         ? powerService.Sleep(displayId)
                         : powerService.Wake(displayId);
                     if (success)
-                        SetEnabled(!_isEnabled, powerIcon, powerBtn, ApplyColors);
+                        SetEnabled(!_isEnabled, powerIcon, powerCircle, ApplyColors, ApplyPowerCircleColors);
                 });
+            powerCircle.Tag = $"power-{displayId}";
 
-            powerBtn.WithTheme((t, c) => c
-                .Background(t.IsDark
-                    ? Color.FromArgb(160, 50, 50, 50)
-                    : Color.FromArgb(160, 200, 200, 200))
-                .BorderThickness(0));
+            void ApplyPowerCircleColors(Theme t)
+            {
+                // Icon always white — hollow/outline look against the colored circle
+                powerIcon.Foreground(Color.FromArgb(255, 255, 255, 255));
 
-            inner = new Grid().Children(Button, powerBtn);
+                if (_isEnabled)
+                    powerCircle.Background(Color.FromArgb(210, 210, 55, 55));   // red — disable
+                else
+                    powerCircle.Background(Color.FromArgb(210, 45, 160, 45));   // green — enable
+            }
+
+            powerCircle.WithTheme((t, _) => ApplyPowerCircleColors(t));
+
+            inner = new Grid().Children(Button, powerCircle);
         }
         else
         {
@@ -227,12 +236,14 @@ internal sealed class MonitorToggle
         Tile = border;
     }
 
-    private void SetEnabled(bool enabled, TextBlock powerIcon, Button powerBtn, Action<Theme> applyColors)
+    private void SetEnabled(bool enabled, TextBlock powerIcon, Border powerCircle, Action<Theme> applyColors, Action<Theme>? applyPowerCircleColors = null)
     {
         _isEnabled = enabled;
         Button.IsEnabled = enabled;
-        powerIcon.Text(enabled ? "✕" : "+");
-        powerBtn.ToolTip(enabled ? "Disable display" : "Enable display");
+        powerIcon.Text(enabled ? "" : "");
+        powerCircle.ToolTip(enabled ? "Disable display" : "Enable display");
         Button.WithTheme((t, _) => applyColors(t));
+        if (applyPowerCircleColors != null)
+            powerCircle.WithTheme((t, _) => applyPowerCircleColors(t));
     }
 }
