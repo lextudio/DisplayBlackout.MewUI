@@ -8,8 +8,13 @@ using DisplayBlackout.Platform;
 using DisplayBlackout.Platform.MacOS;
 using DisplayBlackout.Platform.Win32;
 using DisplayBlackout.Services;
+using System.Globalization;
 using DisplayBlackout.Views;
+using ProTranslate;
+using ProTranslate.Generated;
+#if DEBUG
 using LeXtudio.DevFlow.Agent.MewUI;
+#endif
 
 IDisplayService displayService;
 IBlackoutOverlayFactory overlayFactory;
@@ -66,6 +71,54 @@ if (resetSettings)
 {
     settingsService.ResetAll();
 }
+
+// Initialize ProTranslate — use saved language, or fall back to system UI language on first launch
+var defaultCulture = CultureInfo.GetCultureInfo("en");
+string[] supportedLanguages = ["en", "zh-Hans", "zh-Hant", "ko", "ja"];
+
+var savedLanguage = settingsService.LoadLanguage();
+CultureInfo initialCulture;
+if (savedLanguage != null)
+{
+    initialCulture = CultureInfo.GetCultureInfo(savedLanguage);
+}
+else
+{
+    // First launch: pick the best match from the system UI language chain
+    var systemCulture = CultureInfo.CurrentUICulture;
+    initialCulture = defaultCulture;
+    // Walk the culture chain: zh-TW → zh → invariant
+    var candidates = new List<CultureInfo> { systemCulture };
+    var parent = systemCulture.Parent;
+    while (parent != null && parent != CultureInfo.InvariantCulture)
+    {
+        candidates.Add(parent);
+        parent = parent.Parent;
+    }
+    foreach (var candidate in candidates)
+    {
+        var name = candidate.Name;
+        if (supportedLanguages.Contains(name, StringComparer.OrdinalIgnoreCase))
+        {
+            initialCulture = candidate;
+            break;
+        }
+        // zh-TW / zh-HK / zh-MO → zh-Hant
+        if (name.StartsWith("zh-", StringComparison.OrdinalIgnoreCase) &&
+            !name.Equals("zh-Hans", StringComparison.OrdinalIgnoreCase))
+        {
+            initialCulture = CultureInfo.GetCultureInfo("zh-Hant");
+            break;
+        }
+    }
+}
+
+var cultures = new CultureService(initialCulture);
+var translationProvider = new ProTranslateGeneratedTranslationProvider("Strings");
+var translations = new global::ProTranslate.TranslationService(
+    translationProvider, cultures,
+    new TranslationFallbackOptions { DefaultCulture = defaultCulture });
+ProTranslate.MewUI.TranslationService.UseService(translations, cultures);
 
 var blackoutService = new BlackoutService(settingsService, displayService, overlayFactory);
 var displayNumberService = new DisplayNumberService(displayService);

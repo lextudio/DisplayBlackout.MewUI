@@ -1,0 +1,37 @@
+{
+  "App": {
+    "Title": "ディスプレイブラックアウト"
+  },
+  "Settings": {
+    "InstructionText": "ブラックアウトするディスプレイをクリックして切り替えてください。",
+    "IdentifyDisplays": "ディスプレイを識別",
+    "DisplayBlackout": "ディスプレイブラックアウト",
+    "DisplayBlackoutDesc": "選択したディスプレイをブラックアウトします",
+    "Opacity": "不透明度 (%)",
+    "OpacityDesc": "ブラックアウトオーバーレイの暗さを調整します",
+    "ClickThrough": "クリックスルー",
+    "ClickThroughDesc": "マウスとタッチをオーバーレイに透過させます",
+    "Activation": "アクティベーション",
+    "ActivationShortcut": "アクティベーションショートカット",
+    "ActivationShortcutDesc": "このショートカットでブラックアウトを切り替えます",
+    "Appearance": "外観",
+    "Theme": "テーマ",
+    "ThemeDesc": "ライトまたはダークモードを選択",
+    "AccentColor": "アクセントカラー",
+    "AccentColorDesc": "アクセントカラーを選択します",
+    "Language": "言語",
+    "LanguageDesc": "表示言語を選択します"
+  },
+  "Theme": {
+    "System": "システム",
+    "Light": "ライト",
+    "Dark": "ダーク"
+  },
+  "Monitor": {
+    "DisableDisplay": "ディスプレイを無効化",
+    "EnableDisplay": "ディスプレイを有効化"
+  },
+  "Exit": {
+    "PowerOffWarning": "ディスプレイ {0} が物理的にオフになっています。\n今終了すると、アプリ再起動後もオフのままになります。\nケーブルを抜き差しして復旧が必要になる場合があります。\n\n終了しますか？"
+  }
+}

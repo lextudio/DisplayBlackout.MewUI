@@ -1,0 +1,37 @@
+{
+  "App": {
+    "Title": "Display Blackout"
+  },
+  "Settings": {
+    "InstructionText": "Click to toggle which displays will be blacked out.",
+    "IdentifyDisplays": "Identify displays",
+    "DisplayBlackout": "Display blackout",
+    "DisplayBlackoutDesc": "Black out the selected displays",
+    "Opacity": "Opacity (%)",
+    "OpacityDesc": "Adjust how dark the blackout overlay appears",
+    "ClickThrough": "Click through",
+    "ClickThroughDesc": "Allow mouse and touch to pass through the overlay",
+    "Activation": "Activation",
+    "ActivationShortcut": "Activation shortcut",
+    "ActivationShortcutDesc": "Press this shortcut to toggle blackout",
+    "Appearance": "Appearance",
+    "Theme": "Theme",
+    "ThemeDesc": "Choose light or dark mode",
+    "AccentColor": "Accent color",
+    "AccentColorDesc": "Choose the accent color",
+    "Language": "Language",
+    "LanguageDesc": "Choose display language"
+  },
+  "Theme": {
+    "System": "System",
+    "Light": "Light",
+    "Dark": "Dark"
+  },
+  "Monitor": {
+    "DisableDisplay": "Disable display",
+    "EnableDisplay": "Enable display"
+  },
+  "Exit": {
+    "PowerOffWarning": "Display {0} is physically powered off.\nIf you quit now, it will stay off after restarting the app.\nYou may need to disconnect and reconnect the cable to recover it.\n\nQuit anyway?"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "App": {
+    "Title": "顯示器黑屏"
+  },
+  "Settings": {
+    "InstructionText": "點擊切換要黑屏的顯示器。",
+    "IdentifyDisplays": "識別顯示器",
+    "DisplayBlackout": "顯示器黑屏",
+    "DisplayBlackoutDesc": "將選定的顯示器黑屏",
+    "Opacity": "不透明度 (%)",
+    "OpacityDesc": "調整黑屏覆蓋層的深度",
+    "ClickThrough": "點擊穿透",
+    "ClickThroughDesc": "允許滑鼠和觸控穿過覆蓋層",
+    "Activation": "啟動方式",
+    "ActivationShortcut": "啟動快捷鍵",
+    "ActivationShortcutDesc": "按此快捷鍵切換黑屏",
+    "Appearance": "外觀",
+    "Theme": "主題",
+    "ThemeDesc": "選擇淺色或深色模式",
+    "AccentColor": "強調色",
+    "AccentColorDesc": "選擇強調色",
+    "Language": "語言",
+    "LanguageDesc": "選擇介面語言"
+  },
+  "Theme": {
+    "System": "跟隨系統",
+    "Light": "淺色",
+    "Dark": "深色"
+  },
+  "Monitor": {
+    "DisableDisplay": "關閉顯示器",
+    "EnableDisplay": "開啟顯示器"
+  },
+  "Exit": {
+    "PowerOffWarning": "顯示器 {0} 已實體關閉。\n退出後重新啟動 App 仍為關閉狀態，\n可能需要手動斷電重新接線才能恢復。\n\n確定退出？"
+  }
+}

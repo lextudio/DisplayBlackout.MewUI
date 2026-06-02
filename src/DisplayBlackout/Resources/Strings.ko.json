@@ -1,0 +1,37 @@
+{
+  "App": {
+    "Title": "화면 블랙아웃"
+  },
+  "Settings": {
+    "InstructionText": "블랙아웃할 화면을 클릭하여 선택하세요.",
+    "IdentifyDisplays": "디스플레이 식별",
+    "DisplayBlackout": "화면 블랙아웃",
+    "DisplayBlackoutDesc": "선택한 화면을 블랙아웃 처리합니다",
+    "Opacity": "불투명도 (%)",
+    "OpacityDesc": "블랙아웃 오버레이의 어둡기를 조절합니다",
+    "ClickThrough": "클릭 통과",
+    "ClickThroughDesc": "마우스와 터치가 오버레이를 통과하도록 허용",
+    "Activation": "활성화",
+    "ActivationShortcut": "활성화 단축키",
+    "ActivationShortcutDesc": "이 단축키로 블랙아웃을 전환합니다",
+    "Appearance": "외관",
+    "Theme": "테마",
+    "ThemeDesc": "라이트 또는 다크 모드 선택",
+    "AccentColor": "강조색",
+    "AccentColorDesc": "강조색을 선택합니다",
+    "Language": "언어",
+    "LanguageDesc": "표시 언어를 선택합니다"
+  },
+  "Theme": {
+    "System": "시스템",
+    "Light": "라이트",
+    "Dark": "다크"
+  },
+  "Monitor": {
+    "DisableDisplay": "화면 끄기",
+    "EnableDisplay": "화면 켜기"
+  },
+  "Exit": {
+    "PowerOffWarning": "{0} 화면이 물리적으로 꺼져 있습니다.\n지금 종료하면 앱 재시작 후에도 꺼진 상태로 유지됩니다.\n케이블을 뽑았다 다시 꽂아야 할 수 있습니다.\n\n종료하시겠습니까?"
+  }
+}

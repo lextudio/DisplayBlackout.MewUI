@@ -80,6 +80,15 @@ internal sealed class SettingsService
         Save();
     }
 
+    /// <summary>Returns null when the user has never set a language (first launch).</summary>
+    public string? LoadLanguage() => _settings.Language;
+
+    public void SaveLanguage(string languageCode)
+    {
+        _settings.Language = languageCode;
+        Save();
+    }
+
     public void ResetAll()
     {
         _settings = new AppSettings();
@@ -140,6 +149,8 @@ internal sealed class AppSettings
     public string? Theme { get; set; }
 
     public string? Accent { get; set; }
+
+    public string? Language { get; set; }
 
     public Dictionary<string, string>? DisplayBoundsCache { get; set; }
 }

@@ -54,9 +54,22 @@
     <PackageReference Include="Aprillz.MewUI.Platform.Win32" Version="0.15.2" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <!-- DevFlow agent — debug only, NuGet package -->
+    <PackageReference Include="LeXtudio.DevFlow.Agent.MewUI" Version="0.1.11" />
+  </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\uno-tools\wpf-labs\src\DevFlow\LeXtudio.DevFlow.Agent.Core\LeXtudio.DevFlow.Agent.Core.csproj" />
-    <ProjectReference Include="..\..\..\..\uno-tools\wpf-labs\src\DevFlow\LeXtudio.DevFlow.Agent.MewUI\LeXtudio.DevFlow.Agent.MewUI.csproj" />
+    <!-- ProTranslate MewUI adapter — local project (not yet on NuGet) -->
+    <ProjectReference Include="..\..\..\..\mewui-tools\ProTranslate\src\ProTranslate.MewUI\ProTranslate.MewUI.csproj" />
+    <!-- SourceGenerator — NuGet package -->
+    <PackageReference Include="ProTranslate.SourceGenerator" Version="0.1.0"
+                      OutputItemType="Analyzer" ReferenceOutputAssembly="false" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!-- Translation JSON files fed to the SourceGenerator -->
+  <ItemGroup>
+    <AdditionalFiles Include="Resources/Strings.*.json" />
   </ItemGroup>
 
 </Project>

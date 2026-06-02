@@ -4,6 +4,7 @@ using Aprillz.MewUI.Rendering;
 
 using DisplayBlackout.Platform;
 using DisplayBlackout.Services;
+using ProTranslate.MewUI;
 
 namespace DisplayBlackout.Views;
 
@@ -35,7 +36,7 @@ internal sealed class SettingsView : UserControl
                     .Children(
                         // Instructions
                         new TextBlock()
-                            .Text("Click to toggle which displays will be blacked out.")
+                            .Bind(TextBlock.TextProperty, T("Settings.InstructionText"))
                             .WithTheme((t, c) => c.Foreground(t.Palette.DisabledText))
                             .Margin(0, 0, 0, 12),
 
@@ -65,21 +66,21 @@ internal sealed class SettingsView : UserControl
                                     : Color.FromArgb(160, 200, 200, 200))
                                 .BorderThickness(0)),
 
-                        // Display blackout toggle (app logo icon, matching original ImageIcon)
+                        // Display blackout toggle
                         SettingsCard(
                             new Image() { Source = ImageSource.FromResource(System.Reflection.Assembly.GetExecutingAssembly(), "icon.ico") }
                                 .Width(20).Height(20),
-                            "Display blackout", "Black out the selected displays", blackoutToggle),
+                            T("Settings.DisplayBlackout"), T("Settings.DisplayBlackoutDesc"), blackoutToggle),
 
                         // Opacity slider
-                        SettingsCard("\uF08C", "Opacity (%)", "Adjust how dark the blackout overlay appears", opacitySlider),
+                        SettingsCard("\uF08C", T("Settings.Opacity"), T("Settings.OpacityDesc"), opacitySlider),
 
                         // Click through toggle
-                        SettingsCard("\uE8B0", "Click through", "Allow mouse and touch to pass through the overlay", clickThroughToggle),
+                        SettingsCard("\uE8B0", T("Settings.ClickThrough"), T("Settings.ClickThroughDesc"), clickThroughToggle),
 
                         // Activation section header
                         new TextBlock()
-                            .Text("Activation")
+                            .Bind(TextBlock.TextProperty, T("Settings.Activation"))
                             .Bold()
                             .Margin(0, 24, 0, 4),
 
@@ -88,7 +89,7 @@ internal sealed class SettingsView : UserControl
 
                         // Appearance
                         new Expander()
-                            .Header(new TextBlock().Text("Appearance").Bold())
+                            .Header(new TextBlock().Bind(TextBlock.TextProperty, T("Settings.Appearance")).Bold())
                             .Margin(0, 20, 0, 0)
                             .Content(
                                 new StackPanel()
@@ -97,34 +98,25 @@ internal sealed class SettingsView : UserControl
                                     .Spacing(4)
                                     .Children(
                                         // Theme
-                                        SettingsCard("\uE793", "Theme", "Choose light or dark mode",
-                                            new ComboBox()
-                                                .Width(120)
-                                                .Items("System", "Light", "Dark")
-                                                .SelectedIndex(ThemeToIndex(settingsService?.LoadTheme()))
-                                                .OnSelectionChanged(selected =>
-                                                {
-                                                    if (selected is string s)
-                                                    {
-                                                        var variant = s switch
-                                                        {
-                                                            "Light" => ThemeVariant.Light,
-                                                            "Dark" => ThemeVariant.Dark,
-                                                            _ => ThemeVariant.System
-                                                        };
-                                                        Application.Current?.SetTheme(variant);
-                                                        settingsService?.SaveTheme(s);
-                                                    }
-                                                })),
+                                        SettingsCard("\uE793", T("Settings.Theme"), T("Settings.ThemeDesc"),
+                                            CreateThemePicker(settingsService)),
+
+                                        // Language
+                                        SettingsCard("\uE774", T("Settings.Language"), T("Settings.LanguageDesc"),
+                                            CreateLanguagePicker(settingsService)),
 
                                         // Accent color
-                                        SettingsCard("\uE790", "Accent color", "Choose the accent color",
+                                        SettingsCard("\uE790", T("Settings.AccentColor"), T("Settings.AccentColorDesc"),
                                             CreateAccentPicker(settingsService))
                                     ))
                     ));
     }
 
-    private static FrameworkElement SettingsCard(string icon, string header, string description, FrameworkElement action)
+    // Shorthand: creates a reactive ObservableValue<string> from a translation key
+    private static ObservableValue<string> T(string key) =>
+        TranslationExtensions.TranslationBinding(key);
+
+    private static FrameworkElement SettingsCard(string icon, ObservableValue<string> header, ObservableValue<string> description, FrameworkElement action)
     {
         var iconElement = new TextBlock()
             .Text(icon)
@@ -136,7 +128,7 @@ internal sealed class SettingsView : UserControl
         return SettingsCard(iconElement, header, description, action);
     }
 
-    private static FrameworkElement SettingsCard(FrameworkElement iconElement, string header, string description, FrameworkElement action)
+    private static FrameworkElement SettingsCard(FrameworkElement iconElement, ObservableValue<string> header, ObservableValue<string> description, FrameworkElement action)
     {
         return new Border()
             .CornerRadius(4)
@@ -155,8 +147,8 @@ internal sealed class SettingsView : UserControl
                             .Spacing(2)
                             .CenterVertical()
                             .Children(
-                                new TextBlock().Text(header).SemiBold(),
-                                new TextBlock().Text(description)
+                                new TextBlock().Bind(TextBlock.TextProperty, header).SemiBold(),
+                                new TextBlock().Bind(TextBlock.TextProperty, description)
                                     .WithTheme((t, c) => c.Foreground(t.Palette.DisabledText))
                             )
                     ));
@@ -168,6 +160,87 @@ internal sealed class SettingsView : UserControl
         "Dark" => 2,
         _ => 0
     };
+
+    // (code, translation key) — code is the stable value stored in settings
+    private static readonly (string Code, string Key)[] ThemeOptions =
+    [
+        ("System", "Theme.System"),
+        ("Light",  "Theme.Light"),
+        ("Dark",   "Theme.Dark"),
+    ];
+
+    private static FrameworkElement CreateThemePicker(SettingsService? settingsService)
+    {
+        // Host the ComboBox in a container so we can rebuild it from scratch on a
+        // language switch. MewUI's ComboBox caches its popup list and does not rebind
+        // existing cells when only the item text changes (same ItemsSource reference),
+        // so an in-place item refresh leaves the dropdown showing stale labels.
+        // Recreating the control discards the cached popup and is the only reliable fix.
+        var host = new Border();
+
+        ComboBox BuildCombo()
+        {
+            var combo = new ComboBox().Width(120);
+            combo.Items(ThemeOptions,
+                t => ProTranslate.MewUI.TranslationService.Source.Translate(t.Key),
+                t => t.Code);
+            combo.SelectedIndex(ThemeToIndex(settingsService?.LoadTheme()));
+            combo.OnSelectionChanged(_ =>
+            {
+                var idx = combo.SelectedIndex;
+                if (idx < 0 || idx >= ThemeOptions.Length) return;
+                var code = ThemeOptions[idx].Code;
+                var variant = code switch
+                {
+                    "Light" => ThemeVariant.Light,
+                    "Dark"  => ThemeVariant.Dark,
+                    _       => ThemeVariant.System
+                };
+                Application.Current?.SetTheme(variant);
+                settingsService?.SaveTheme(code);
+            });
+            return combo;
+        }
+
+        host.Child(BuildCombo());
+
+        var cultureWatcher = T("Theme.System");
+        cultureWatcher.Changed += () => host.Child(BuildCombo());
+        host.Tag = cultureWatcher;   // strong ref keeps cultureWatcher alive
+
+        return host;
+    }
+
+    private static readonly (string Code, string Label)[] Languages =
+    [
+        ("en",      "English"),
+        ("zh-Hans", "简体中文"),
+        ("zh-Hant", "繁體中文"),
+        ("ko",      "한국어"),
+        ("ja",      "日本語"),
+    ];
+
+    private static FrameworkElement CreateLanguagePicker(SettingsService? settingsService)
+    {
+        // Show whichever language is actually active (saved or auto-detected on first launch)
+        var activeCode = ProTranslate.MewUI.TranslationService.Culture.Name;
+        var selectedIndex = Math.Max(0, Array.FindIndex(Languages, l =>
+            l.Code.Equals(activeCode, StringComparison.OrdinalIgnoreCase)));
+
+        return new ComboBox()
+            .Width(120)
+            .Items(Languages.Select(l => l.Label).ToArray())
+            .SelectedIndex(selectedIndex)
+            .OnSelectionChanged(selected =>
+            {
+                if (selected is not string label) return;
+                var match = Array.Find(Languages, l => l.Label == label);
+                if (match == default) return;
+                ProTranslate.MewUI.TranslationService.Culture =
+                    System.Globalization.CultureInfo.GetCultureInfo(match.Code);
+                settingsService?.SaveLanguage(match.Code);
+            });
+    }
 
     private static FrameworkElement CreateAccentPicker(SettingsService? settingsService)
     {
@@ -196,28 +269,13 @@ internal sealed class SettingsView : UserControl
 
     private static FrameworkElement CreateShortcutCard()
     {
-        if (OperatingSystem.IsMacOS())
-        {
-            return SettingsCard("\uEDA7", "Activation shortcut", "Press this shortcut to toggle blackout",
-                new StackPanel()
-                    .Horizontal()
-                    .Spacing(4)
-                    .Children(
-                        KeyBadge("\u2318"),
-                        KeyBadge("\u21E7"),
-                        KeyBadge("B")
-                    ));
-        }
+        var keys = OperatingSystem.IsMacOS()
+            ? new StackPanel().Horizontal().Spacing(4)
+                .Children(KeyBadge("\u2318"), KeyBadge("\u21E7"), KeyBadge("B"))
+            : new StackPanel().Horizontal().Spacing(4)
+                .Children(WinKeyBadge(), KeyBadge("Shift"), KeyBadge("B"));
 
-        return SettingsCard("\uEDA7", "Activation shortcut", "Press this shortcut to toggle blackout",
-            new StackPanel()
-                .Horizontal()
-                .Spacing(4)
-                .Children(
-                    WinKeyBadge(),
-                    KeyBadge("Shift"),
-                    KeyBadge("B")
-                ));
+        return SettingsCard("\uEDA7", T("Settings.ActivationShortcut"), T("Settings.ActivationShortcutDesc"), keys);
     }
 
     private static FrameworkElement WinKeyBadge()

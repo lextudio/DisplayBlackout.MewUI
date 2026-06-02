@@ -3,6 +3,7 @@ using Aprillz.MewUI.Controls;
 
 using DisplayBlackout.Platform;
 using DisplayBlackout.Services;
+using ProTranslate.MewUI;
 
 namespace DisplayBlackout.Views;
 
@@ -181,12 +182,22 @@ internal sealed class MonitorToggle
                 .CenterHorizontal()
                 .CenterVertical();
 
+            // Reactive tooltip: updates on both culture change and _isEnabled toggle
+            var disableText = TranslationExtensions.TranslationBinding("Monitor.DisableDisplay");
+            var enableText  = TranslationExtensions.TranslationBinding("Monitor.EnableDisplay");
+            var tooltipObs  = new ObservableValue<string>(_isEnabled ? disableText.Value : enableText.Value);
+
+            // When culture changes, whichever key is active gets re-translated automatically
+            disableText.Changed += () => { if (_isEnabled)  tooltipObs.Value = disableText.Value; };
+            enableText.Changed  += () => { if (!_isEnabled) tooltipObs.Value = enableText.Value; };
+
+            var tooltipBlock = new TextBlock().Bind(TextBlock.TextProperty, tooltipObs);
+
             powerCircle = new Border()
                 .Width(20)
                 .Height(20)
                 .CornerRadius(10)
                 .Cursor(CursorType.Hand)
-                .ToolTip(_isEnabled ? "Disable display" : "Enable display")
                 .HorizontalAlignment(HorizontalAlignment.Right)
                 .VerticalAlignment(VerticalAlignment.Top)
                 .Margin(0, 4, 4, 0)
@@ -197,8 +208,12 @@ internal sealed class MonitorToggle
                         ? powerService.Sleep(displayId)
                         : powerService.Wake(displayId);
                     if (success)
+                    {
+                        tooltipObs.Value = _isEnabled ? enableText.Value : disableText.Value;
                         SetEnabled(!_isEnabled, powerIcon, powerCircle, ApplyColors, ApplyPowerCircleColors);
+                    }
                 });
+            powerCircle.ToolTip = tooltipBlock;
             powerCircle.Tag = $"power-{displayId}";
 
             void ApplyPowerCircleColors(Theme t)
@@ -241,7 +256,6 @@ internal sealed class MonitorToggle
         _isEnabled = enabled;
         Button.IsEnabled = enabled;
         powerIcon.Text(enabled ? "" : "");
-        powerCircle.ToolTip(enabled ? "Disable display" : "Enable display");
         Button.WithTheme((t, _) => applyColors(t));
         if (applyPowerCircleColors != null)
             powerCircle.WithTheme((t, _) => applyPowerCircleColors(t));
