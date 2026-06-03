@@ -1,0 +1,5 @@
+mode: ContinuousDelivery
+tag-prefix: '[vV]?'
+branches: {}
+ignore:
+  sha: []
