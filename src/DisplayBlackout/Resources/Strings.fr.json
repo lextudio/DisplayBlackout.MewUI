@@ -1,0 +1,37 @@
+{
+  "App": {
+    "Title": "Display Blackout"
+  },
+  "Settings": {
+    "InstructionText": "Cliquez pour choisir les écrans à occulter.",
+    "IdentifyDisplays": "Identifier les écrans",
+    "DisplayBlackout": "Occultation de l'écran",
+    "DisplayBlackoutDesc": "Occulter les écrans sélectionnés",
+    "Opacity": "Opacité (%)",
+    "OpacityDesc": "Régler l'intensité de l'assombrissement de la surcouche",
+    "ClickThrough": "Clic traversant",
+    "ClickThroughDesc": "Laisser passer la souris et le tactile à travers la surcouche",
+    "Activation": "Activation",
+    "ActivationShortcut": "Raccourci d'activation",
+    "ActivationShortcutDesc": "Appuyez sur ce raccourci pour activer ou désactiver l'occultation",
+    "Appearance": "Apparence",
+    "Theme": "Thème",
+    "ThemeDesc": "Choisir le mode clair ou sombre",
+    "AccentColor": "Couleur d'accentuation",
+    "AccentColorDesc": "Choisir la couleur d'accentuation",
+    "Language": "Langue",
+    "LanguageDesc": "Choisir la langue d'affichage"
+  },
+  "Theme": {
+    "System": "Système",
+    "Light": "Clair",
+    "Dark": "Sombre"
+  },
+  "Monitor": {
+    "DisableDisplay": "Désactiver l'écran",
+    "EnableDisplay": "Activer l'écran"
+  },
+  "Exit": {
+    "PowerOffWarning": "L'écran {0} est physiquement éteint.\nSi vous quittez maintenant, il restera éteint après le redémarrage de l'application.\nVous devrez peut-être débrancher et rebrancher le câble pour le rétablir.\n\nQuitter quand même ?"
+  }
+}

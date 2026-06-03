@@ -74,7 +74,7 @@ if (resetSettings)
 
 // Initialize ProTranslate — use saved language, or fall back to system UI language on first launch
 var defaultCulture = CultureInfo.GetCultureInfo("en");
-string[] supportedLanguages = ["en", "zh-Hans", "zh-Hant", "ko", "ja"];
+string[] supportedLanguages = ["en", "zh-Hans", "zh-Hant", "ko", "ja", "de", "fr", "it", "es", "pl"];
 
 var savedLanguage = settingsService.LoadLanguage();
 CultureInfo initialCulture;

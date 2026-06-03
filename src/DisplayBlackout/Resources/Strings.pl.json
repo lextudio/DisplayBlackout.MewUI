@@ -1,0 +1,37 @@
+{
+  "App": {
+    "Title": "Display Blackout"
+  },
+  "Settings": {
+    "InstructionText": "Kliknij, aby wybrać, które ekrany mają zostać wygaszone.",
+    "IdentifyDisplays": "Identyfikuj ekrany",
+    "DisplayBlackout": "Wygaszanie ekranu",
+    "DisplayBlackoutDesc": "Wygaś wybrane ekrany",
+    "Opacity": "Krycie (%)",
+    "OpacityDesc": "Dostosuj, jak ciemna jest nakładka wygaszająca",
+    "ClickThrough": "Kliknięcie przelotowe",
+    "ClickThroughDesc": "Zezwól, aby mysz i dotyk przechodziły przez nakładkę",
+    "Activation": "Aktywacja",
+    "ActivationShortcut": "Skrót aktywacji",
+    "ActivationShortcutDesc": "Naciśnij ten skrót, aby przełączyć wygaszanie",
+    "Appearance": "Wygląd",
+    "Theme": "Motyw",
+    "ThemeDesc": "Wybierz tryb jasny lub ciemny",
+    "AccentColor": "Kolor akcentu",
+    "AccentColorDesc": "Wybierz kolor akcentu",
+    "Language": "Język",
+    "LanguageDesc": "Wybierz język wyświetlania"
+  },
+  "Theme": {
+    "System": "Systemowy",
+    "Light": "Jasny",
+    "Dark": "Ciemny"
+  },
+  "Monitor": {
+    "DisableDisplay": "Wyłącz ekran",
+    "EnableDisplay": "Włącz ekran"
+  },
+  "Exit": {
+    "PowerOffWarning": "Ekran {0} jest fizycznie wyłączony.\nJeśli zamkniesz teraz, pozostanie wyłączony po ponownym uruchomieniu aplikacji.\nMoże być konieczne odłączenie i ponowne podłączenie kabla, aby go przywrócić.\n\nZamknąć mimo to?"
+  }
+}

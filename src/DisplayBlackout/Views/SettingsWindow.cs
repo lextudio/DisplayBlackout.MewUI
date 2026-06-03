@@ -171,44 +171,42 @@ internal sealed class SettingsView : UserControl
 
     private static FrameworkElement CreateThemePicker(SettingsService? settingsService)
     {
-        // Host the ComboBox in a container so we can rebuild it from scratch on a
-        // language switch. MewUI's ComboBox caches its popup list and does not rebind
-        // existing cells when only the item text changes (same ItemsSource reference),
-        // so an in-place item refresh leaves the dropdown showing stale labels.
-        // Recreating the control discards the cached popup and is the only reliable fix.
-        var host = new Border();
+        var combo = new ComboBox().Width(120);
 
-        ComboBox BuildCombo()
-        {
-            var combo = new ComboBox().Width(120);
+        void RefreshItems() =>
             combo.Items(ThemeOptions,
                 t => ProTranslate.MewUI.TranslationService.Source.Translate(t.Key),
                 t => t.Code);
-            combo.SelectedIndex(ThemeToIndex(settingsService?.LoadTheme()));
-            combo.OnSelectionChanged(_ =>
-            {
-                var idx = combo.SelectedIndex;
-                if (idx < 0 || idx >= ThemeOptions.Length) return;
-                var code = ThemeOptions[idx].Code;
-                var variant = code switch
-                {
-                    "Light" => ThemeVariant.Light,
-                    "Dark"  => ThemeVariant.Dark,
-                    _       => ThemeVariant.System
-                };
-                Application.Current?.SetTheme(variant);
-                settingsService?.SaveTheme(code);
-            });
-            return combo;
-        }
 
-        host.Child(BuildCombo());
+        RefreshItems();
+        combo.SelectedIndex(ThemeToIndex(settingsService?.LoadTheme()));
 
+        // Re-translate the dropdown labels when the language changes.
         var cultureWatcher = T("Theme.System");
-        cultureWatcher.Changed += () => host.Child(BuildCombo());
-        host.Tag = cultureWatcher;   // strong ref keeps cultureWatcher alive
+        cultureWatcher.Changed += () =>
+        {
+            var savedIndex = combo.SelectedIndex;
+            RefreshItems();
+            combo.SelectedIndex(savedIndex);
+        };
+        combo.Tag = cultureWatcher;   // strong ref keeps cultureWatcher alive
 
-        return host;
+        combo.OnSelectionChanged(_ =>
+        {
+            var idx = combo.SelectedIndex;
+            if (idx < 0 || idx >= ThemeOptions.Length) return;
+            var code = ThemeOptions[idx].Code;
+            var variant = code switch
+            {
+                "Light" => ThemeVariant.Light,
+                "Dark"  => ThemeVariant.Dark,
+                _       => ThemeVariant.System
+            };
+            Application.Current?.SetTheme(variant);
+            settingsService?.SaveTheme(code);
+        });
+
+        return combo;
     }
 
     private static readonly (string Code, string Label)[] Languages =
@@ -218,6 +216,11 @@ internal sealed class SettingsView : UserControl
         ("zh-Hant", "繁體中文"),
         ("ko",      "한국어"),
         ("ja",      "日本語"),
+        ("de",      "Deutsch"),
+        ("fr",      "Français"),
+        ("it",      "Italiano"),
+        ("es",      "Español"),
+        ("pl",      "Polski"),
     ];
 
     private static FrameworkElement CreateLanguagePicker(SettingsService? settingsService)

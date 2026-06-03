@@ -1,0 +1,37 @@
+{
+  "App": {
+    "Title": "Display Blackout"
+  },
+  "Settings": {
+    "InstructionText": "Klicken Sie, um auszuwählen, welche Bildschirme abgedunkelt werden.",
+    "IdentifyDisplays": "Bildschirme identifizieren",
+    "DisplayBlackout": "Bildschirmabdunklung",
+    "DisplayBlackoutDesc": "Die ausgewählten Bildschirme abdunkeln",
+    "Opacity": "Deckkraft (%)",
+    "OpacityDesc": "Anpassen, wie dunkel die Abdunklungsüberlagerung erscheint",
+    "ClickThrough": "Klick durchlassen",
+    "ClickThroughDesc": "Maus und Touch durch die Überlagerung hindurchlassen",
+    "Activation": "Aktivierung",
+    "ActivationShortcut": "Aktivierungstastenkombination",
+    "ActivationShortcutDesc": "Drücken Sie diese Tastenkombination, um die Abdunklung umzuschalten",
+    "Appearance": "Erscheinungsbild",
+    "Theme": "Design",
+    "ThemeDesc": "Hellen oder dunklen Modus wählen",
+    "AccentColor": "Akzentfarbe",
+    "AccentColorDesc": "Die Akzentfarbe wählen",
+    "Language": "Sprache",
+    "LanguageDesc": "Anzeigesprache wählen"
+  },
+  "Theme": {
+    "System": "System",
+    "Light": "Hell",
+    "Dark": "Dunkel"
+  },
+  "Monitor": {
+    "DisableDisplay": "Bildschirm deaktivieren",
+    "EnableDisplay": "Bildschirm aktivieren"
+  },
+  "Exit": {
+    "PowerOffWarning": "Bildschirm {0} ist physisch ausgeschaltet.\nWenn Sie jetzt beenden, bleibt er nach dem Neustart der App ausgeschaltet.\nMöglicherweise müssen Sie das Kabel trennen und wieder anschließen, um ihn wiederherzustellen.\n\nTrotzdem beenden?"
+  }
+}

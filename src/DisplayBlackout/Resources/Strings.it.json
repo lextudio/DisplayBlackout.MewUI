@@ -1,0 +1,37 @@
+{
+  "App": {
+    "Title": "Display Blackout"
+  },
+  "Settings": {
+    "InstructionText": "Fai clic per scegliere quali schermi oscurare.",
+    "IdentifyDisplays": "Identifica schermi",
+    "DisplayBlackout": "Oscuramento schermo",
+    "DisplayBlackoutDesc": "Oscura gli schermi selezionati",
+    "Opacity": "Opacità (%)",
+    "OpacityDesc": "Regola quanto appare scura la sovrapposizione di oscuramento",
+    "ClickThrough": "Clic passante",
+    "ClickThroughDesc": "Consenti a mouse e tocco di attraversare la sovrapposizione",
+    "Activation": "Attivazione",
+    "ActivationShortcut": "Scorciatoia di attivazione",
+    "ActivationShortcutDesc": "Premi questa scorciatoia per attivare o disattivare l'oscuramento",
+    "Appearance": "Aspetto",
+    "Theme": "Tema",
+    "ThemeDesc": "Scegli la modalità chiara o scura",
+    "AccentColor": "Colore principale",
+    "AccentColorDesc": "Scegli il colore principale",
+    "Language": "Lingua",
+    "LanguageDesc": "Scegli la lingua di visualizzazione"
+  },
+  "Theme": {
+    "System": "Sistema",
+    "Light": "Chiaro",
+    "Dark": "Scuro"
+  },
+  "Monitor": {
+    "DisableDisplay": "Disattiva schermo",
+    "EnableDisplay": "Attiva schermo"
+  },
+  "Exit": {
+    "PowerOffWarning": "Lo schermo {0} è fisicamente spento.\nSe esci ora, rimarrà spento dopo il riavvio dell'app.\nPotrebbe essere necessario scollegare e ricollegare il cavo per ripristinarlo.\n\nUscire comunque?"
+  }
+}

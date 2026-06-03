@@ -1,0 +1,37 @@
+{
+  "App": {
+    "Title": "Display Blackout"
+  },
+  "Settings": {
+    "InstructionText": "Haz clic para elegir qué pantallas se oscurecerán.",
+    "IdentifyDisplays": "Identificar pantallas",
+    "DisplayBlackout": "Oscurecimiento de pantalla",
+    "DisplayBlackoutDesc": "Oscurecer las pantallas seleccionadas",
+    "Opacity": "Opacidad (%)",
+    "OpacityDesc": "Ajustar cuán oscura aparece la superposición de oscurecimiento",
+    "ClickThrough": "Clic a través",
+    "ClickThroughDesc": "Permitir que el ratón y el tacto atraviesen la superposición",
+    "Activation": "Activación",
+    "ActivationShortcut": "Atajo de activación",
+    "ActivationShortcutDesc": "Pulsa este atajo para activar o desactivar el oscurecimiento",
+    "Appearance": "Apariencia",
+    "Theme": "Tema",
+    "ThemeDesc": "Elegir el modo claro u oscuro",
+    "AccentColor": "Color de acento",
+    "AccentColorDesc": "Elegir el color de acento",
+    "Language": "Idioma",
+    "LanguageDesc": "Elegir el idioma de visualización"
+  },
+  "Theme": {
+    "System": "Sistema",
+    "Light": "Claro",
+    "Dark": "Oscuro"
+  },
+  "Monitor": {
+    "DisableDisplay": "Desactivar pantalla",
+    "EnableDisplay": "Activar pantalla"
+  },
+  "Exit": {
+    "PowerOffWarning": "La pantalla {0} está apagada físicamente.\nSi sales ahora, permanecerá apagada después de reiniciar la app.\nEs posible que debas desconectar y volver a conectar el cable para recuperarla.\n\n¿Salir de todos modos?"
+  }
+}
